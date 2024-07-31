@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  .hexagon {
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-  }
-}
-
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
