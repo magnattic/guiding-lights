@@ -66,7 +66,6 @@ const SvgTile = ({ x, y, word }: { x: number; y: number; word?: string }) => {
   return (
     <div
       class={`text-black flex justify-center items-center scale-130 stroke-white`}
-      classList={{ 'stroke-black': hasWord }}
       style={{ 'grid-row': y, 'grid-column': x }}
       draggable="true"
     >
@@ -92,9 +91,16 @@ const SvgTile = ({ x, y, word }: { x: number; y: number; word?: string }) => {
           d="M22.0992 77L2.19922 42.5L22.0992 8H61.8992L81.7992 42.5L61.8992 77H22.0992Z"
           fill={word ? 'white' : 'transparent'}
           stroke-width={isHovered() ? 3 : 1}
+          classList={{ 'stroke-black': hasWord }}
         ></path>
       </svg>
-      <div class="absolute">{word ?? `${x},${y}`}</div>
+      <div
+        class="absolute"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {word ?? `${x},${y}`}
+      </div>
     </div>
   );
 };

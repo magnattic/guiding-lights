@@ -7,7 +7,7 @@ export default {
         13: 'repeat(13, minmax(0, 1fr))',
       },
       scale: {
-        130: '1.40',
+        130: '1.35',
       },
     },
   },
