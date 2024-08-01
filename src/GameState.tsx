@@ -21,7 +21,8 @@ export type GameState = {
     amulet: boolean;
     exit: boolean;
   };
-  placeTile: () => void;
+  selectTile: (tile: TileData) => void;
+  placeTile: (tile: TileData) => void;
   giveHint: (hint: string) => void;
   startGame: () => void;
   toggleSecrets: () => void;
@@ -59,6 +60,7 @@ export const useGameState = createWithSignal<GameState>((set) => ({
       waterLimit: 7,
     });
   },
+  selectTile: (tile: TileData) => set({ selectedTile: tile }),
   giveHint: (hint) => set({ currentHint: hint }),
   toggleSecrets: () =>
     set((state) => ({ secretsRevealed: !state.secretsRevealed })),

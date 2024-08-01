@@ -50,8 +50,6 @@ export const SideMenu = () => {
         </Show>
       </div>
 
-      <hr class="h-px bg-gray-200 border-0 dark:bg-gray-700" />
-
       <div class="flex flex-col">
         <div>Wasser Limit: {waterLimit()}</div>
         <div>Schätze: {foundSecrets().treasures} von 3</div>

@@ -31,6 +31,7 @@ export const GameBoard = () => {
               y={item.y}
               word={item.word}
               type={item.type}
+              onClick={() => console.log('clicked', item)}
             />
           )}
         </For>
@@ -40,10 +41,17 @@ export const GameBoard = () => {
   );
 };
 
-const BoardTile = ({ x, y, word, type }: TileData) => {
+const BoardTile = ({
+  x,
+  y,
+  word,
+  type,
+  onClick,
+}: TileData & { onClick: () => void }) => {
   const [isHovered, setHovered] = createSignal(false);
 
   const secretsRevealed = useGameState((state) => state.secretsRevealed);
+  const selectedTile = useGameState((state) => state.selectedTile);
 
   const hasWord = word !== undefined;
   const revealedType = () => (secretsRevealed() ? type : undefined);
@@ -73,10 +81,12 @@ const BoardTile = ({ x, y, word, type }: TileData) => {
         'fill-transparent': !isSecret() && !hasWord,
         'stroke-2': isHovered(),
         'stroke-1': !isHovered(),
+        'cursor-pointer': true,
       }}
       style={{ 'grid-row': y, 'grid-column': x }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
       pathClassList={{
         'opacity-60': isSecret(),
         'opacity-80': hasWord,
