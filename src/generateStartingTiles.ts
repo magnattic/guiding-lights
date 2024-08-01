@@ -9,7 +9,7 @@ export const generateStartingTiles = (): TileData[] => {
     isAdjacent(tile, startTile)
   );
   const randomTiles = [startTile, ...R.sample(adjacentTiles, 2)];
-  const randomWords = R.sample(words, 3);
+  const randomWords = R.sample(R.unique(words), 3);
   return randomTiles.map((tile, index) => ({
     ...tile,
     word: randomWords[index],
