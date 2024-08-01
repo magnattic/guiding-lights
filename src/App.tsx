@@ -20,6 +20,17 @@ type SerializableGameState = Pick<
   'secrets' | 'secretsRevealed' | 'tilesLeft' | 'placedTiles'
 >;
 
+const serializedFields = [
+  'currentHint',
+  'foundSecrets',
+  'selectedTile',
+  'waterLimit',
+  'placedTiles',
+  'secrets',
+  'tilesLeft',
+  'secretsRevealed',
+] satisfies (keyof GameState)[];
+
 const handleRoomJoin = (room: Room) => {
   console.log('Room changed', room.getPeers());
   room.onPeerJoin((peerId) => console.log(`${peerId} joined`));
@@ -29,16 +40,10 @@ const handleRoomJoin = (room: Room) => {
     room.makeAction<SerializableGameState>('sendGame');
 
   useGameState.subscribe((state, prevState) => {
-    const {
-      updateGame: _,
-      startGame: __,
-      toggleSecrets: ___,
-      ...serializableState
-    } = state;
-    const { updateGame, startGame, toggleSecrets, ...prevSerializableState } =
-      prevState;
-    if (!R.isDeepEqual(prevState, state)) {
-      console.log('Sending game state', state);
+    const serializableState = R.pick(state, serializedFields);
+    const prevSerializableState = R.pick(prevState, serializedFields);
+    if (!R.isDeepEqual(prevSerializableState, serializableState)) {
+      console.log('Sending game state', serializableState);
       sendGameState(serializableState);
     }
   });
@@ -51,7 +56,7 @@ const handleRoomJoin = (room: Room) => {
 };
 
 export const App = () => {
-  const [room, setRoom] = createSignal<Room | null>(null);
+  const [_room, setRoom] = createSignal<Room | null>(null);
 
   const [, { Form, Field }] = createForm<RoomForm>();
 

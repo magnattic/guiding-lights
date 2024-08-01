@@ -51,7 +51,7 @@ const BoardTile = ({
   const [isHovered, setHovered] = createSignal(false);
 
   const secretsRevealed = useGameState((state) => state.secretsRevealed);
-  const selectedTile = useGameState((state) => state.selectedTile);
+  // const selectedTile = useGameState((state) => state.selectedTile);
 
   const hasWord = word !== undefined;
   const revealedType = () => (secretsRevealed() ? type : undefined);
