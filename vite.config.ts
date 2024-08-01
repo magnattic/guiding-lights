@@ -1,9 +1,7 @@
 import { defineConfig } from 'vite';
 import solid from 'vite-plugin-solid';
-
-import tailwindcss from 'tailwindcss';
-import autoprefixer from 'autoprefixer';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
-  plugins: [solid()],
+  plugins: [solid(), tsconfigPaths()],
 });

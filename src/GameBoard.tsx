@@ -1,15 +1,10 @@
 import { FaSolidHelicopter, FaSolidPersonFalling } from 'solid-icons/fa';
 import { IoAperture, IoDiamond, IoSkull, IoWater } from 'solid-icons/io';
-import {
-  ComponentProps,
-  createMemo,
-  createSignal,
-  For,
-  JSX,
-  splitProps,
-} from 'solid-js';
+import { createMemo, createSignal, For } from 'solid-js';
 import { tileConfig } from './GameBoard/tileConfig';
 import { useGameState } from './GameState';
+import { Hexagon } from './Hexagon';
+import { SideMenu } from './SideMenu';
 import { isSameTile, TileData } from './TileData';
 
 export const GameBoard = () => {
@@ -42,37 +37,6 @@ export const GameBoard = () => {
       </div>
       <SideMenu />
     </main>
-  );
-};
-
-const SideMenu = () => {
-  const availableTiles = useGameState((state) => state.tilesLeft);
-  const startGame = useGameState((state) => state.startGame);
-  const toggleSecrets = useGameState((state) => state.toggleSecrets);
-  const secrets = useGameState((state) => state.secrets);
-
-  return (
-    <nav class="m-5 flex flex-col">
-      <button onClick={startGame}>Neues Spiel starten</button>
-      <div class="flex relative h-40 w-30 p-4">
-        <Hexagon
-          class="fill-white stroke-black absolute h-full w-full top-[6px] left-[6px]"
-          pathClassList={{ stack: true }}
-        />
-        <Hexagon
-          class="fill-white stroke-black absolute h-full w-full top-[3px] left-[3px]"
-          pathClassList={{ stack: true }}
-        />
-        <Hexagon
-          class="fill-white stroke-black text-black text-4xl absolute top-0 left-0 h-full w-full"
-          pathClassList={{ stack: true }}
-        >
-          {availableTiles()}
-        </Hexagon>
-      </div>
-      <div>Kacheln übrig</div>
-      <button onClick={toggleSecrets}>Geheimnisse {secrets().length}</button>
-    </nav>
   );
 };
 
@@ -128,47 +92,5 @@ const BoardTile = ({ x, y, word, type }: TileData) => {
         {isExit() && <FaSolidHelicopter size={24} />}
       </div>
     </Hexagon>
-  );
-};
-
-const Hexagon = (
-  props: ComponentProps<'div'> & {
-    children?: JSX.Element;
-    svgProps?: JSX.SvgSVGAttributes<SVGSVGElement>;
-    onMouseEnter?: () => void;
-    onMouseLeave?: () => void;
-    pathClassList?: Record<string, boolean | undefined>;
-  }
-) => {
-  const [_local, others] = splitProps(props, [
-    'children',
-    'svgProps',
-    'pathClassList',
-    'onMouseEnter',
-    'onMouseLeave',
-    'class',
-  ]);
-  return (
-    <div class={`flex justify-center items-center ${props.class}`} {...others}>
-      <svg
-        {...props.svgProps}
-        viewBox="0 0 84 84"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M22.0992 77L2.19922 42.5L22.0992 8H61.8992L81.7992 42.5L61.8992 77H22.0992Z"
-          classList={props.pathClassList}
-          onMouseEnter={props.onMouseEnter}
-          onMouseLeave={props.onMouseLeave}
-        ></path>
-      </svg>
-      <div
-        class="absolute flex flex-col justify-center items-center"
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
-      >
-        {props.children}
-      </div>
-    </div>
   );
 };

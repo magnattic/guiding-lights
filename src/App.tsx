@@ -63,7 +63,7 @@ export const App = () => {
 
   return (
     <Show
-      when={room() !== null}
+      when={true}
       fallback={
         <Form
           onSubmit={handleSubmit}

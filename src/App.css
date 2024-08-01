@@ -25,3 +25,14 @@
 .read-the-docs {
   color: #888;
 }
+
+.hex-grid {
+  display: grid;
+  background: url('/original.webp') no-repeat center center;
+  background-size: contain;
+  padding: 100px 120px;
+  height: 800px;
+  width: 800px;
+  grid-template-columns: repeat(7, 80px);
+  grid-template-rows: repeat(13, 46px);
+}
