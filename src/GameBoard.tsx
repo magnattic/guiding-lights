@@ -1,4 +1,5 @@
-import * as R from 'remeda';
+import { FaSolidHelicopter, FaSolidPersonFalling } from 'solid-icons/fa';
+import { IoAperture, IoDiamond, IoSkull, IoWater } from 'solid-icons/io';
 import {
   ComponentProps,
   createMemo,
@@ -7,101 +8,13 @@ import {
   JSX,
   splitProps,
 } from 'solid-js';
-import { createWithSignal } from 'solid-zustand';
-import { words } from './assets/wordList.json';
 import { tileConfig } from './GameBoard/tileConfig';
-import { IoAperture, IoDiamond, IoSkull, IoWater } from 'solid-icons/io';
-import { FaSolidHelicopter, FaSolidPersonFalling } from 'solid-icons/fa';
-
-type TileData = {
-  x: number;
-  y: number;
-  word?: string;
-  type?: 'treasure' | 'water' | 'trap' | 'curse' | 'amulet' | 'exit';
-};
-
-const isSameTile = (a: TileData, b: TileData) => a.x === b.x && a.y === b.y;
-
-const isAdjacent = (a: TileData, b: TileData) => {
-  if (isSameTile(a, b)) {
-    return false;
-  }
-  const xDiff = Math.abs(a.x - b.x);
-  const yDiff = Math.abs(a.y - b.y);
-  return xDiff <= 1 && yDiff <= 2;
-};
-
-const generateStartingTiles = (): TileData[] => {
-  const startTile = R.sample(tileConfig, 1)[0]!;
-  const adjacentTiles = tileConfig.filter((tile) =>
-    isAdjacent(tile, startTile)
-  );
-  const randomTiles = [startTile, ...R.sample(adjacentTiles, 2)];
-  const randomWords = R.sample(words, 3);
-  return randomTiles.map((tile, index) => ({
-    ...tile,
-    word: randomWords[index],
-  }));
-};
-
-const generateSecrets = (startingTiles: TileData[]) => {
-  const randomFreeTiles = R.shuffle(
-    R.differenceWith(tileConfig, startingTiles, isSameTile)
-  );
-  const [treasureTiles, tilesAfterTreasure] = R.splitAt(randomFreeTiles, 3);
-  const [waterTiles, tilesAfterWater] = R.splitAt(tilesAfterTreasure, 3);
-  const [trapTiles, tilesAfterTrap] = R.splitAt(tilesAfterWater, 3);
-  const [curseTiles, tilesAfterCurse] = R.splitAt(tilesAfterTrap, 3);
-  const [amuletTiles, tilesAfterAmulet] = R.splitAt(tilesAfterCurse, 1);
-  const [exitTiles] = R.splitAt(tilesAfterAmulet, 1);
-  return [
-    ...treasureTiles.map((tile) => ({
-      ...tile,
-      type: 'treasure' as const,
-    })),
-    ...waterTiles.map((tile) => ({ ...tile, type: 'water' as const })),
-    ...trapTiles.map((tile) => ({ ...tile, type: 'trap' as const })),
-    ...curseTiles.map((tile) => ({ ...tile, type: 'curse' as const })),
-    ...amuletTiles.map((tile) => ({ ...tile, type: 'amulet' as const })),
-    ...exitTiles.map((tile) => ({ ...tile, type: 'exit' as const })),
-  ];
-};
-
-type GameState = {
-  availableTiles: number;
-  placedTiles: TileData[];
-  secrets: TileData[];
-  secretsRevealed: boolean;
-  placeTile: () => void;
-  startGame: () => void;
-  toggleSecrets: () => void;
-};
-
-const useGameState = createWithSignal<GameState>((set) => ({
-  availableTiles: 0,
-  placedTiles: [],
-  secrets: [],
-  secretsRevealed: false,
-  placeTile: () =>
-    set((state) => ({ availableTiles: state.availableTiles - 1 })),
-  startGame: () => {
-    const startingTiles = generateStartingTiles();
-    set({
-      availableTiles: 7,
-      placedTiles: startingTiles,
-      secrets: generateSecrets(startingTiles),
-    });
-  },
-  toggleSecrets: () =>
-    set((state) => ({ secretsRevealed: !state.secretsRevealed })),
-}));
+import { useGameState } from './GameState';
+import { isSameTile, TileData } from './TileData';
 
 export const GameBoard = () => {
-  const availableTiles = useGameState((state) => state.availableTiles);
   const placedTiles = useGameState((state) => state.placedTiles);
   const secrets = useGameState((state) => state.secrets);
-  const startGame = useGameState((state) => state.startGame);
-  const toggleSecrets = useGameState((state) => state.toggleSecrets);
 
   const boardTiles = createMemo((): TileData[] => {
     return tileConfig.map((tile) => {
@@ -112,10 +25,6 @@ export const GameBoard = () => {
       return placedTile ?? secretTile ?? tile;
     });
   });
-
-  const onStartGame = () => {
-    startGame();
-  };
 
   return (
     <main class="flex flex-row">
@@ -131,28 +40,39 @@ export const GameBoard = () => {
           )}
         </For>
       </div>
-      <nav class="m-5 flex flex-col">
-        <button onClick={onStartGame}>Restart Game</button>
-        <div class="flex relative h-40 w-30 p-4">
-          <Hexagon
-            class="fill-white stroke-black absolute h-full w-full top-[6px] left-[6px]"
-            pathClassList={{ stack: true }}
-          />
-          <Hexagon
-            class="fill-white stroke-black absolute h-full w-full top-[3px] left-[3px]"
-            pathClassList={{ stack: true }}
-          />
-          <Hexagon
-            class="fill-white stroke-black text-black text-4xl absolute top-0 left-0 h-full w-full"
-            pathClassList={{ stack: true }}
-          >
-            {availableTiles()}
-          </Hexagon>
-        </div>
-        <div>Kacheln übrig</div>
-        <button onClick={toggleSecrets}>Geheimnisse {secrets().length}</button>
-      </nav>
+      <SideMenu />
     </main>
+  );
+};
+
+const SideMenu = () => {
+  const availableTiles = useGameState((state) => state.tilesLeft);
+  const startGame = useGameState((state) => state.startGame);
+  const toggleSecrets = useGameState((state) => state.toggleSecrets);
+  const secrets = useGameState((state) => state.secrets);
+
+  return (
+    <nav class="m-5 flex flex-col">
+      <button onClick={startGame}>Neues Spiel starten</button>
+      <div class="flex relative h-40 w-30 p-4">
+        <Hexagon
+          class="fill-white stroke-black absolute h-full w-full top-[6px] left-[6px]"
+          pathClassList={{ stack: true }}
+        />
+        <Hexagon
+          class="fill-white stroke-black absolute h-full w-full top-[3px] left-[3px]"
+          pathClassList={{ stack: true }}
+        />
+        <Hexagon
+          class="fill-white stroke-black text-black text-4xl absolute top-0 left-0 h-full w-full"
+          pathClassList={{ stack: true }}
+        >
+          {availableTiles()}
+        </Hexagon>
+      </div>
+      <div>Kacheln übrig</div>
+      <button onClick={toggleSecrets}>Geheimnisse {secrets().length}</button>
+    </nav>
   );
 };
 
