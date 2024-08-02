@@ -67,7 +67,6 @@ export const SideMenu = () => {
 
 const GuideMenu = () => {
   const toggleSecrets = useGameState((state) => state.toggleSecrets);
-  const secrets = useGameState((state) => state.secrets);
   const secretsRevealed = useGameState((state) => state.secretsRevealed);
   const giveHint = useGameState((state) => state.giveHint);
 

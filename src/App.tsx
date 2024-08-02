@@ -15,10 +15,7 @@ const config: BaseRoomConfig = {
   password: '1odja0du1ß23uedjqßaj1ß',
 };
 
-type SerializableGameState = Pick<
-  GameState,
-  'secrets' | 'secretsRevealed' | 'tilesLeft' | 'placedTiles'
->;
+type SerializableGameState = Pick<GameState, (typeof serializedFields)[number]>;
 
 const serializedFields = [
   'currentHint',
@@ -28,7 +25,6 @@ const serializedFields = [
   'placedTiles',
   'secrets',
   'tilesLeft',
-  'secretsRevealed',
 ] satisfies (keyof GameState)[];
 
 const handleRoomJoin = (room: Room) => {
@@ -56,7 +52,7 @@ const handleRoomJoin = (room: Room) => {
 };
 
 export const App = () => {
-  const [_room, setRoom] = createSignal<Room | null>(null);
+  const [room, setRoom] = createSignal<Room | null>(null);
 
   const [, { Form, Field }] = createForm<RoomForm>();
 
@@ -68,7 +64,7 @@ export const App = () => {
 
   return (
     <Show
-      when={true}
+      when={room()}
       fallback={
         <Form
           onSubmit={handleSubmit}
