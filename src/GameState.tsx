@@ -49,7 +49,67 @@ const emptyState = {
 
 export const useGameState = createWithSignal<GameState>((set) => ({
   ...emptyState,
-  placeTile: () => set((state) => ({ tilesLeft: state.tilesLeft - 1 })),
+  placeTile: (tile) =>
+    set((state) => {
+      if (state.tilesLeft === 0) return state;
+      if (state.currentHint === null) return state;
+      const baseState: Partial<GameState> = {
+        tilesLeft: state.tilesLeft - 1,
+        placedTiles: [
+          ...state.placedTiles,
+          { ...tile, word: state.currentHint! },
+        ],
+        selectedTile: null,
+        currentHint: null,
+      };
+      switch (tile.type) {
+        case 'treasure':
+          return {
+            ...baseState,
+            foundSecrets: {
+              ...state.foundSecrets,
+              treasures: state.foundSecrets.treasures + 1,
+            },
+          };
+        case 'water':
+          return {
+            ...baseState,
+            foundSecrets: {
+              ...state.foundSecrets,
+              water: state.foundSecrets.water + 1,
+            },
+            tilesLeft: state.waterLimit,
+          };
+        case 'trap':
+          return {
+            ...baseState,
+            foundSecrets: {
+              ...state.foundSecrets,
+              traps: state.foundSecrets.traps + 1,
+            },
+          };
+        case 'curse':
+          return {
+            ...baseState,
+            foundSecrets: {
+              ...state.foundSecrets,
+              curses: state.foundSecrets.curses + 1,
+            },
+          };
+        case 'amulet':
+          return {
+            ...baseState,
+            foundSecrets: { ...state.foundSecrets, amulet: true },
+          };
+        case 'exit':
+          return {
+            ...baseState,
+            foundSecrets: { ...state.foundSecrets, exit: true },
+          };
+        default:
+          return baseState;
+      }
+    }),
   startGame: () => {
     const startingTiles = generateStartingTiles();
     set({

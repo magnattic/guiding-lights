@@ -6,37 +6,44 @@ export const Hexagon = (
     svgProps?: JSX.SvgSVGAttributes<SVGSVGElement>;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
+    onClick?: () => void;
     pathClassList?: Record<string, boolean | undefined>;
   }
 ) => {
-  const [_local, others] = splitProps(props, [
+  const [localProps, otherProps] = splitProps(props, [
     'children',
     'svgProps',
     'pathClassList',
     'onMouseEnter',
     'onMouseLeave',
+    'onClick',
     'class',
   ]);
   return (
-    <div class={`flex justify-center items-center ${props.class}`} {...others}>
+    <div
+      class={`flex justify-center items-center ${localProps.class}`}
+      {...otherProps}
+    >
       <svg
-        {...props.svgProps}
+        {...localProps.svgProps}
         viewBox="0 0 84 84"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M22.0992 77L2.19922 42.5L22.0992 8H61.8992L81.7992 42.5L61.8992 77H22.0992Z"
-          classList={props.pathClassList}
-          onMouseEnter={props.onMouseEnter}
-          onMouseLeave={props.onMouseLeave}
+          classList={localProps.pathClassList}
+          onMouseEnter={localProps.onMouseEnter}
+          onMouseLeave={localProps.onMouseLeave}
+          onClick={localProps.onClick}
         ></path>
       </svg>
       <div
         class="absolute flex flex-col justify-center items-center"
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
+        onMouseEnter={localProps.onMouseEnter}
+        onMouseLeave={localProps.onMouseLeave}
+        onClick={localProps.onClick}
       >
-        {props.children}
+        {localProps.children}
       </div>
     </div>
   );

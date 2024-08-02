@@ -9,6 +9,7 @@ import {
   TextFieldLabel,
 } from './components/ui/text-field';
 import { createForm, getValue, reset } from '@modular-forms/solid';
+import { FaBrandsRedhat } from 'solid-icons/fa';
 
 export const SideMenu = () => {
   const availableTiles = useGameState((state) => state.tilesLeft);
@@ -39,6 +40,7 @@ export const SideMenu = () => {
         <div>Kacheln übrig</div>
       </div>
 
+      <GuideMenu />
       <div class="w-full h-40 relative">
         <Show when={currentHint()} fallback={<div>Kein Hinweis</div>}>
           <Hexagon
@@ -51,7 +53,7 @@ export const SideMenu = () => {
       </div>
 
       <div class="flex flex-col">
-        <div>Wasser Limit: {waterLimit()}</div>
+        <div>Wasserflaschen: {waterLimit()}</div>
         <div>Schätze: {foundSecrets().treasures} von 3</div>
         <div>Fallen: {foundSecrets().traps} von 3</div>
         <div>Wasser: {foundSecrets().water} von 3</div>
@@ -59,8 +61,6 @@ export const SideMenu = () => {
         <div>Amulett: {foundSecrets().amulet ? 1 : 0} von 1</div>
         <div>Ausgang: {foundSecrets().exit ? 1 : 0} von 1</div>
       </div>
-
-      <GuideMenu />
     </nav>
   );
 };
@@ -77,7 +77,9 @@ const GuideMenu = () => {
 
   return (
     <>
-      <Button onClick={toggleSecrets}>Geheimnisse {secrets().length}</Button>
+      <Button onClick={toggleSecrets} variant="destructive">
+        <FaBrandsRedhat class="mr-2" /> Guide
+      </Button>
 
       <Show when={secretsRevealed()}>
         <Field name="hint">
